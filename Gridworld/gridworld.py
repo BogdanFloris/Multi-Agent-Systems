@@ -94,15 +94,6 @@ class GridWorld:
             if delta < theta:
                 break
 
-    def calc_v(self):
-        """
-        Calculates v using the formula v = (I - gamma * P) * r
-        """
-        identity = np.identity(self.n, dtype=float)
-        invertible = identity - self.gamma * self.P
-        inverse = np.linalg.inv(invertible)
-        self.v = np.matmul(inverse, self.r)
-
     def print_grid(self):
         for i in range(self.n):
             for j in range(self.n):
