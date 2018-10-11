@@ -125,6 +125,8 @@ class GridWorld:
                 self.v = np.round(self.v, 1)
                 break
 
+    # TODO: function for episodic policy evaluation
+
     def print_grid(self):
         for i in range(self.n):
             for j in range(self.n):
@@ -132,8 +134,13 @@ class GridWorld:
             print()
 
 
+# continuous grid world
 grid = GridWorld()
 grid.policy_evaluation()
 grid.policy_improvement()
 grid.policy_evaluation()
 grid.print_grid()
+
+# episodic grid world
+grid2 = GridWorld(gamma=1)
+grid2.print_grid()
