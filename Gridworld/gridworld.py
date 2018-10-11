@@ -33,10 +33,40 @@ class GridWorld:
         """
         Constructs the policy based on v.
         """
-        # TODO: implement
-        pass
+        for i in range(self.n):
+            for j in range(self.n):
+                state_values = {}
+                for action in Actions:
+                    if action == Actions.NORTH:
+                        if not i == 0:
+                            state_values[Actions.NORTH] = self.v[(i - 1) * self.n + j]
+                        else:
+                            state_values[Actions.NORTH] = -np.infty
+                    elif action == Actions.SOUTH:
+                        if not i == self.n - 1:
+                            state_values[Actions.SOUTH] = self.v[(i + 1) * self.n + j]
+                        else:
+                            state_values[Actions.SOUTH] = -np.infty
+                    elif action == Actions.EAST:
+                        if not j == self.n - 1:
+                            state_values[Actions.EAST] = self.v[i * self.n + j + 1]
+                        else:
+                            state_values[Actions.EAST] = -np.infty
+                    elif action == Actions.WEST:
+                        if not j == 0:
+                            state_values[Actions.WEST] = self.v[i * self.n + j - 1]
+                        else:
+                            state_values[Actions.WEST] = -np.infty
+                # make probabilities
+                best_action_value = state_values[max(state_values, key=state_values.get)]
+                all_best_actions = [key for key in state_values.keys() if state_values[key] == best_action_value]
+                for action in Actions:
+                    if state_values[action] == best_action_value:
+                        self.policy[i * self.n + j][action] = 1 / len(all_best_actions)
+                    else:
+                        self.policy[i * self.n + j][action] = 0
 
-    def policy_iteration(self, theta=0.001):
+    def policy_evaluation(self, theta=0.001):
         """
         Calculates V using the algorithm on pg. 61, Sutton
         :param theta: checks when to break out of the while true loop
@@ -92,15 +122,18 @@ class GridWorld:
                     self.v[i * self.n + j] = actions_sum
                     delta = max(delta, abs(v - self.v[i * self.n + j]))
             if delta < theta:
+                self.v = np.round(self.v, 1)
                 break
 
     def print_grid(self):
         for i in range(self.n):
             for j in range(self.n):
-                print(round(self.v[i * self.n + j], 1), end=' ')
+                print(self.v[i * self.n + j], end=' ')
             print()
 
 
 grid = GridWorld()
-grid.policy_iteration()
+grid.policy_evaluation()
+grid.policy_improvement()
+grid.policy_evaluation()
 grid.print_grid()
