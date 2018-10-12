@@ -125,14 +125,45 @@ class GridWorld:
                 self.v = np.round(self.v, 1)
                 break
 
-    def temporal_difference_0(self, num_episodes=200):
+    def temporal_difference_0(self, num_episodes=200, alpha=2/3):
         """
         TD(0) algorithm as described on page 98 of the Sutton book.
         It computes the values for V but for an episodic game, where
         A and B are terminal states.
+        :param alpha learning rate
         :param num_episodes the number of episodes to generate.
         """
-        pass
+        for _ in range(num_episodes):
+            # generate random starting state
+            i, j = self._generate_starting_state()
+            while True:
+                # generate random action based on policy
+                action = np.random.choice(self.policy[i * self.n + j].keys(), p=self.policy[i * self.n + j].values())
+                # determine the next state and the reward
+                new_i, new_j, reward = 0, 0, 0
+                if action == Actions.NORTH:
+                    pass
+                elif action == Actions.SOUTH:
+                    pass
+                elif action == Actions.EAST:
+                    pass
+                elif action == Actions.WEST:
+                    pass
+                # update state value
+                self.v[i * self.n + j] += alpha * (reward + self.gamma * self.v[
+                    new_i * self.n + new_j] - self.v[i * self.n + j])
+                # update i and j
+                i, j = new_j, new_j
+                # check to see if we are in a terminal state
+                if (i == 0 and j == 1) or (i == 0 and j == 3):
+                    break
+
+    @staticmethod
+    def _generate_starting_state():
+        i, j = np.random.randint(low=0, high=5, size=2)
+        while (i == 0 and j == 1) or (i == 0 and j == 3):
+            i, j = np.random.randint(low=0, high=5, size=2)
+        return i, j
 
     def print_grid(self):
         for i in range(self.n):
