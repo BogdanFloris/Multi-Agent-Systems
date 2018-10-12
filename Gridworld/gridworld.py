@@ -66,6 +66,18 @@ class GridWorld:
                     else:
                         self.policy[i * self.n + j][action] = 0
 
+    def policy_improvement_episodic(self):
+        """
+        Makes state B equal to the max of V + 1 and A equal to the max of V + 2,
+        calls policy_improvement, and then reverts A and B back to 0.
+        """
+        max_v = max(self.v)
+        self.v[0 * self.n + 1] = max_v + 2
+        self.v[0 * self.n + 3] = max_v + 1
+        self.policy_improvement()
+        self.v[0 * self.n + 1] = 0
+        self.v[0 * self.n + 3] = 0
+
     def policy_evaluation(self, theta=0.001):
         """
         Calculates V using the algorithm on pg. 61, Sutton
@@ -125,7 +137,7 @@ class GridWorld:
                 self.v = np.round(self.v, 1)
                 break
 
-    def temporal_difference_0(self, num_episodes=200, alpha=2/3):
+    def temporal_difference_0(self, num_episodes=200, alpha=0.1):
         """
         TD(0) algorithm as described on page 98 of the Sutton book.
         It computes the values for V but for an episodic game, where
@@ -143,21 +155,44 @@ class GridWorld:
                 # determine the next state and the reward
                 new_i, new_j, reward = 0, 0, 0
                 if action == Actions.NORTH:
-                    pass
+                    if i == 0:
+                        reward = -1
+                        new_i, new_j = i, j
+                    else:
+                        new_i, new_j = i - 1, j
                 elif action == Actions.SOUTH:
-                    pass
+                    if i == self.n - 1:
+                        reward = -1
+                        new_i, new_j = i, j
+                    else:
+                        new_i, new_j = i + 1, j
                 elif action == Actions.EAST:
-                    pass
+                    if j == self.n - 1:
+                        reward = -1
+                        new_i, new_j = i, j
+                    else:
+                        new_i, new_j = i, j + 1
                 elif action == Actions.WEST:
-                    pass
+                    if j == 0:
+                        reward = -1
+                        new_i, new_j = i, j
+                    else:
+                        new_i, new_j = i, j - 1
+                if new_i == 0 and new_j == 1:
+                    # state A
+                    reward = 10
+                if new_i == 0 and new_j == 3:
+                    # state B
+                    reward = 5
                 # update state value
                 self.v[i * self.n + j] += alpha * (reward + self.gamma * self.v[
                     new_i * self.n + new_j] - self.v[i * self.n + j])
                 # update i and j
-                i, j = new_j, new_j
+                i, j = new_i, new_j
                 # check to see if we are in a terminal state
                 if (i == 0 and j == 1) or (i == 0 and j == 3):
                     break
+        self.v = np.round(self.v, 2)
 
     @staticmethod
     def _generate_starting_state():
@@ -172,15 +207,26 @@ class GridWorld:
                 print(self.v[i * self.n + j], end=' ')
             print()
 
+    def print_policy(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                print(self.policy[i * self.n + j], end=' ')
+            print()
+
 
 # continuous grid world
 grid = GridWorld()
 grid.policy_evaluation()
 grid.policy_improvement()
 grid.policy_evaluation()
-grid.print_grid()
+# grid.print_grid()
 
 # episodic grid world
 grid2 = GridWorld(gamma=1)
 grid2.temporal_difference_0()
 grid2.print_grid()
+grid2.policy_improvement_episodic()
+grid2.print_policy()
+grid2.temporal_difference_0()
+grid2.print_grid()
+
