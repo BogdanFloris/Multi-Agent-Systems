@@ -138,7 +138,8 @@ class GridWorld:
             i, j = self._generate_starting_state()
             while True:
                 # generate random action based on policy
-                action = np.random.choice(self.policy[i * self.n + j].keys(), p=self.policy[i * self.n + j].values())
+                action = np.random.choice(list(self.policy[i * self.n + j].keys()),
+                                          p=list(self.policy[i * self.n + j].values()))
                 # determine the next state and the reward
                 new_i, new_j, reward = 0, 0, 0
                 if action == Actions.NORTH:
@@ -181,4 +182,5 @@ grid.print_grid()
 
 # episodic grid world
 grid2 = GridWorld(gamma=1)
+grid2.temporal_difference_0()
 grid2.print_grid()
