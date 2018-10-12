@@ -125,7 +125,14 @@ class GridWorld:
                 self.v = np.round(self.v, 1)
                 break
 
-    # TODO: function for episodic policy evaluation
+    def temporal_difference_0(self, num_episodes=200):
+        """
+        TD(0) algorithm as described on page 98 of the Sutton book.
+        It computes the values for V but for an episodic game, where
+        A and B are terminal states.
+        :param num_episodes the number of episodes to generate.
+        """
+        pass
 
     def print_grid(self):
         for i in range(self.n):
